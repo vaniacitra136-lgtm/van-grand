@@ -1,0 +1,35 @@
+CREATE TABLE bookings (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    booking_code    VARCHAR(20) NOT NULL UNIQUE,
+    guest_id        INT NOT NULL,
+    hotel_id        INT NOT NULL,
+    room_id         INT NOT NULL,
+    check_in        DATE NOT NULL,
+    check_out       DATE NOT NULL,
+    nights          TINYINT NOT NULL DEFAULT 1,
+    adults          TINYINT NOT NULL DEFAULT 1,
+    children        TINYINT NOT NULL DEFAULT 0,
+    room_count      TINYINT NOT NULL DEFAULT 1,
+    subtotal        INT NOT NULL,
+    tax             INT NOT NULL DEFAULT 0,
+    total           INT NOT NULL,
+    notes           TEXT NULL,
+    status          ENUM('pending', 'confirmed', 'checked_in', 'checked_out', 'cancelled') DEFAULT 'confirmed',
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_booking_guest FOREIGN KEY (guest_id) REFERENCES guests(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_booking_hotel FOREIGN KEY (hotel_id) REFERENCES hotels(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_booking_room  FOREIGN KEY (room_id)  REFERENCES rooms(id)  ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT chk_dates  CHECK (check_out > check_in),
+    CONSTRAINT chk_nights CHECK (nights >= 1)
+) ENGINE=InnoDB;
+
+INSERT INTO bookings (booking_code, guest_id, hotel_id, room_id, check_in, check_out, nights, adults, children, room_count, subtotal, tax, total, notes, status) VALUES
+('VGS-A1B2C3D4', 1, 2,  5,  '2025-08-01', '2025-08-04', 3, 2, 0, 1, 7500000,  825000,  8325000,  'Honeymoon, lantai atas',       'confirmed'),
+('VGS-E5F6G7H8', 2, 7,  19, '2025-07-15', '2025-07-18', 3, 2, 1, 1, 9600000,  1056000, 10656000, 'Extra bed untuk anak',           'confirmed'),
+('VGS-I9J0K1L2', 3, 1,  1,  '2025-09-10', '2025-09-12', 2, 1, 0, 1, 3700000,  407000,  4107000,  NULL,                            'pending'),
+('VGS-M3N4O5P6', 4, 10, 28, '2025-07-20', '2025-07-22', 2, 2, 0, 1, 5600000,  616000,  6216000,  'Kamar dengan pemandangan Monas', 'confirmed'),
+('VGS-Q7R8S9T0', 5, 6,  16, '2025-08-05', '2025-08-07', 2, 4, 2, 2, 4400000,  484000,  4884000,  '2 kamar bersebelahan',          'confirmed'),
+('VGS-U1V2W3X4', 6, 4,  10, '2025-10-01', '2025-10-03', 2, 2, 0, 1, 3600000,  396000,  3996000,  NULL,                            'checked_out'),
+('VGS-Y5Z6A7B8', 7, 12, 33, '2025-08-12', '2025-08-15', 3, 1, 0, 1, 4050000,  445500,  4495500,  'Kamar dekat kolam renang',      'confirmed'),
+('VGS-C9D0E1F2', 8, 9,  23, '2025-09-20', '2025-09-22', 2, 2, 1, 1, 2100000,  231000,  2331000,  'Anak usia 5 tahun',              'cancelled');
